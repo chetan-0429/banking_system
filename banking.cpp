@@ -124,10 +124,13 @@ public:
     void withdrawFunds(double amount) {
         if (isActive && amount <= balance && amount > 0) {
             balance -= amount;
-            // transactionHistory.emplace_back("Withdrawal", amount);
+            
+            db.getUserData(username).second = balance;
+            db.saveUserData();
+
         TransactionRecord transaction("Withdrawal", amount);
         transactionHistory.push_back(transaction);
-        
+
             cout << "Successfully withdrawn $" << amount << ". New balance: " << balance << endl;
         } else {
             cout << "Invalid amount or account is inactive. Please contact support." << endl;
@@ -137,7 +140,11 @@ public:
     void depositFunds(double amount) {
         if (isActive && amount > 0) {
             balance += amount;
-            transactionHistory.emplace_back("Deposit", amount);
+            db.getUserData(username).second = balance;
+            db.saveUserData();
+            TransactionRecord transaction("Deposit", amount);
+            transactionHistory.push_back(transaction);
+
             cout << "Successfully deposited $" << amount << ". New balance: " << balance << endl;
         } else {
             cout << "Invalid amount or account is inactive. Please contact support." << endl;
