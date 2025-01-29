@@ -9,6 +9,10 @@
 using namespace std;
 
 class UserDatabase {
+
+private:
+    unordered_map<string, pair<string, double>> userRecords;
+    unordered_map<string, string> adminAccounts;
 public:
     UserDatabase() {
         loadUserData();
@@ -92,9 +96,6 @@ public:
         return userRecords[username];
     }
 
-private:
-    unordered_map<string, pair<string, double>> userRecords;
-    unordered_map<string, string> adminAccounts;
 };
 
 class TransactionRecord {
@@ -106,6 +107,13 @@ public:
 };
 
 class BankAccountManager {
+private:
+    string username;
+    bool isActive;
+    double balance;
+    vector<TransactionRecord> transactionHistory;
+    UserDatabase &db;
+
 public:
     BankAccountManager(const string &accountUsername, UserDatabase &db) : username(accountUsername), isActive(true), balance(0), db(db) {}
 
@@ -116,7 +124,10 @@ public:
     void withdrawFunds(double amount) {
         if (isActive && amount <= balance && amount > 0) {
             balance -= amount;
-            transactionHistory.emplace_back("Withdrawal", amount);
+            // transactionHistory.emplace_back("Withdrawal", amount);
+        TransactionRecord transaction("Withdrawal", amount);
+        transactionHistory.push_back(transaction);
+        
             cout << "Successfully withdrawn $" << amount << ". New balance: " << balance << endl;
         } else {
             cout << "Invalid amount or account is inactive. Please contact support." << endl;
@@ -154,13 +165,6 @@ public:
         db.saveUserData();
         cout << "Account has been successfully closed." << endl;
     }
-
-private:
-    string username;
-    bool isActive;
-    double balance;
-    vector<TransactionRecord> transactionHistory;
-    UserDatabase &db;
 };
 
 class AdminAccess {
@@ -311,3 +315,6 @@ int main() {
     }
     return 0;
 }
+
+
+
